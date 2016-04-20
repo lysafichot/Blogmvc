@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://s.codepen.io/boomerang/18be5941759c3be0bc5f09f10a3b9d641448275524445/index.html -->
+<html class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths" slick-uniqueid="3"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="UTF-8"><meta name="robots" content="noindex"><link rel="canonical" href="Slider bullet clock animation.html">
+<script src="modernizr.js" type="text/javascript"></script><style type="text/css"></style>
+
+
+<link rel="stylesheet prefetch" href="http://codepen.io/assets/reset/normalize.css">
+<style class="cp-pen-styles">body {
+  background: #f8f8f8;
+}
+
+button {
+  background: #a8d729;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px 20px;
+}
+
+.clock-indicators {
+  list-style: none;
+  width: 400px;
+  text-align: center;
+  overflow: hidden;
+  font-size: 0;
+  letter-spacing: -1px;
+  margin: 10% auto;
+}
+.clock-indicators > li {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background: #5f5f5f;
+  position: relative;
+  display: inline-block;
+  margin: 0 20px;
+  -moz-backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -moz-perspective: 1000;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+  -moz-transform: 0;
+  -webkit-transform: 0;
+  transform: 0;
+  /* Transition transform overflow bug fix */
+}
+.clock-indicators > li.active > span {
+  display: block;
+}
+.clock-indicators > li::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  border: 20px solid #f8f8f8;
+  border-radius: 50%;
+  z-index: 4;
+}
+.clock-indicators > li > span {
+  display: none;
+}
+.clock-indicators > li > span:first-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: #a8d729;
+  z-index: 1;
+  -moz-transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -moz-transform-origin: 25px 50%;
+  -ms-transform-origin: 25px 50%;
+  -webkit-transform-origin: 25px 50%;
+  transform-origin: 25px 50%;
+}
+.clock-indicators > li > span:first-child + span {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: #5f5f5f;
+  z-index: 2;
+}
+.clock-indicators > li > span:last-child {
+  width: 50%;
+  height: 110%;
+  float: right;
+  background: #a8d729;
+  -moz-transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -moz-transform-origin: 0 50%;
+  -ms-transform-origin: 0 50%;
+  -webkit-transform-origin: 0 50%;
+  transform-origin: 0 50%;
+  position: relative;
+  z-index: 3;
+  opacity: 1;
+}
+.clock-indicators > li.start span:first-child {
+  -moz-transition: -moz-transform 3s linear 3s;
+  -o-transition: -o-transform 3s linear 3s;
+  -webkit-transition: -webkit-transform 3s linear;
+  -webkit-transition-delay: 3s;
+  transition: transform 3s linear 3s;
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+.clock-indicators > li.start span:last-child {
+  opacity: 0;
+  -moz-transition: -moz-transform 3s linear, opacity 0s 3s;
+  -o-transition: -o-transform 3s linear, opacity 0s 3s;
+  -webkit-transition: -webkit-transform 3s linear, opacity 0s;
+  -webkit-transition-delay: 0s, 3s;
+  transition: transform 3s linear, opacity 0s 3s;
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+</style></head><body>
+<button id="start">Press me</button>
+
+<ol class="clock-indicators" id="indicators">
+  <li class=""><span></span><span></span><span></span></li>
+  <li class=""><span></span><span></span><span></span></li>
+  <li class="active start"><span></span><span></span><span></span></li>
+  <li class=""><span></span><span></span><span></span></li>
+</ol>
+<script src="stopExecutionOnTimeout.js"></script><script src="mootools-yui-compressed.js"></script>
+<script>
+var indicators = document.id('indicators'), active = indicators.getChildren('li:first-child'), button = document.id('start'), init, startIndicators, timer;
+button.addEvent('click', function () {
+    startIndicators();
+});
+init = function () {
+    active.addClass('active');
+    indicators.getChildren('li').each(function (item) {
+        item.set('html', '<span></span><span></span><span></span>');
+    });
+};
+init();
+startIndicators = function () {
+    clearTimeout(timer);
+    active.addClass('start');
+    timer = setTimeout(function () {
+        active.removeClass('active start');
+        active = active.getNext('li');
+        if (!active[0]) {
+            active = indicators.getChildren('li:first-child');
+        }
+        active.addClass('active');
+        setTimeout(startIndicators, 50);
+    }, 6000);
+};
+//# sourceURL=pen.js
+</script>
+<script src="css_live_reload_init.js"></script>
+</body></html>
